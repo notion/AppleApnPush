@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -38,7 +40,7 @@ class Sender implements SenderInterface
     /**
      * {@inheritdoc}
      */
-    public function send(Receiver $receiver, Notification $notification, bool $sandbox = false)
+    public function send(Receiver $receiver, Notification $notification, bool $sandbox = false): void
     {
         $this->protocol->send($receiver, $notification, $sandbox);
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -26,12 +28,12 @@ class UriFactory implements UriFactoryInterface
      *
      * @return string
      */
-    public function create(DeviceToken $deviceToken, bool $sandbox) : string
+    public function create(DeviceToken $deviceToken, bool $sandbox): string
     {
+        $uri = 'https://api.push.apple.com/3/device/%s';
+
         if ($sandbox) {
             $uri = 'https://api.development.push.apple.com/3/device/%s';
-        } else {
-            $uri = 'https://api.push.apple.com/3/device/%s';
         }
 
         return sprintf($uri, $deviceToken);

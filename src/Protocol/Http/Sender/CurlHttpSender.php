@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -13,6 +15,7 @@ namespace Apple\ApnPush\Protocol\Http\Sender;
 
 use Apple\ApnPush\Protocol\Http\Request;
 use Apple\ApnPush\Protocol\Http\Response;
+use Apple\ApnPush\Protocol\Http\Sender\Exception\HttpSenderException;
 
 /**
  * Send HTTP request via cURL
@@ -26,22 +29,33 @@ class CurlHttpSender implements HttpSenderInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @throws HttpSenderException
      */
-    public function send(Request $request) : Response
+    public function send(Request $request): Response
     {
         $this->initializeCurlResource();
         $this->prepareCurlResourceByRequest($request);
 
         $content = curl_exec($this->resource);
+
+        if (false === $content) {
+            throw new HttpSenderException(sprintf(
+                'cURL Error [%d]: %s',
+                (int) curl_errno($this->resource),
+                (string) curl_error($this->resource)
+            ));
+        }
+
         $statusCode = (int) curl_getinfo($this->resource, CURLINFO_HTTP_CODE);
 
-        return new Response($statusCode, $content);
+        return new Response($statusCode, (string) $content);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function close()
+    public function close(): void
     {
         curl_close($this->resource);
         $this->resource = null;
@@ -50,7 +64,7 @@ class CurlHttpSender implements HttpSenderInterface
     /**
      * Initialize cURL resource
      */
-    private function initializeCurlResource()
+    private function initializeCurlResource(): void
     {
         if (!$this->resource) {
             $this->resource = curl_init();
@@ -66,7 +80,7 @@ class CurlHttpSender implements HttpSenderInterface
      *
      * @param Request $request
      */
-    private function prepareCurlResourceByRequest(Request $request)
+    private function prepareCurlResourceByRequest(Request $request): void
     {
         curl_setopt($this->resource, CURLOPT_URL, $request->getUrl());
         curl_setopt($this->resource, CURLOPT_POSTFIELDS, $request->getContent());

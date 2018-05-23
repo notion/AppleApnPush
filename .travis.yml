@@ -1,7 +1,6 @@
 language: php
 
 php:
-    - 7.0
     - 7.1
 
 before_script:
@@ -10,4 +9,7 @@ before_script:
     - php composer.phar install
 
 script:
+    - ./bin/phpmetrics src
+    - ./bin/phpcs --standard=vendor/escapestudios/symfony2-coding-standard/Symfony/ src/
+    - ./bin/phpcs --standard=tests/phpcs-ruleset.xml tests/
     - ./bin/phpunit

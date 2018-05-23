@@ -12,12 +12,10 @@
 namespace Tests\Apple\ApnPush\Protocol\Http\Visitor;
 
 use Apple\ApnPush\Model\Alert;
-use Apple\ApnPush\Model\ApnId;
 use Apple\ApnPush\Model\Aps;
 use Apple\ApnPush\Model\Expiration;
 use Apple\ApnPush\Model\Notification;
 use Apple\ApnPush\Model\Payload;
-use Apple\ApnPush\Model\Priority;
 use Apple\ApnPush\Protocol\Http\Request;
 use Apple\ApnPush\Protocol\Http\Visitor\AddExpirationHeaderVisitor;
 use PHPUnit\Framework\TestCase;
@@ -45,7 +43,7 @@ class AddExpirationHeaderVisitorTest extends TestCase
         $storeTo = new \DateTime();
 
         $payload = new Payload(new Aps(new Alert()));
-        $notification = new Notification($payload, ApnId::fromNull(), Priority::fromNull(), Expiration::storeTo($storeTo));
+        $notification = new Notification($payload, null, null, new Expiration($storeTo));
         $request = new Request('https://domain.com', '{}');
 
         $visitedRequest = $this->visitor->visit($notification, $request);
@@ -53,7 +51,25 @@ class AddExpirationHeaderVisitorTest extends TestCase
         $headers = $visitedRequest->getHeaders();
 
         self::assertEquals([
-            'apns-expiration' => $storeTo->format('U')
+            'apns-expiration' => $storeTo->format('U'),
+        ], $headers);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldAddHeaderForZeroExpiration()
+    {
+        $payload = new Payload(new Aps(new Alert()));
+        $notification = new Notification($payload, null, null, new Expiration());
+        $request = new Request('https://domain.com', '{}');
+
+        $visitedRequest = $this->visitor->visit($notification, $request);
+
+        $headers = $visitedRequest->getHeaders();
+
+        self::assertEquals([
+            'apns-expiration' => 0,
         ], $headers);
     }
 

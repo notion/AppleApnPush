@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -11,6 +13,7 @@
 
 namespace Apple\ApnPush\Protocol;
 
+use Apple\ApnPush\Exception\SendNotification\SendNotificationException;
 use Apple\ApnPush\Model\Notification;
 use Apple\ApnPush\Model\Receiver;
 
@@ -26,7 +29,12 @@ interface ProtocolInterface
      * @param Notification $notification
      * @param bool         $sandbox
      *
-     * @throws \Apple\ApnPush\Exception\SendNotification\SendNotificationException
+     * @throws SendNotificationException
      */
-    public function send(Receiver $receiver, Notification $notification, bool $sandbox);
+    public function send(Receiver $receiver, Notification $notification, bool $sandbox): void;
+
+    /**
+     * Close the connection
+     */
+    public function closeConnection(): void;
 }

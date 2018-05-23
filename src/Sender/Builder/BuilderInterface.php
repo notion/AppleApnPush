@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -11,6 +13,7 @@
 
 namespace Apple\ApnPush\Sender\Builder;
 
+use Apple\ApnPush\Protocol\ProtocolInterface;
 use Apple\ApnPush\Sender\SenderInterface;
 
 /**
@@ -19,9 +22,16 @@ use Apple\ApnPush\Sender\SenderInterface;
 interface BuilderInterface
 {
     /**
+     * Build the protocol for send the notification to devices
+     *
+     * @return ProtocolInterface
+     */
+    public function buildProtocol(): ProtocolInterface;
+
+    /**
      * Build sender for send notification to device via Apn Push service
      *
      * @return SenderInterface
      */
-    public function build() : SenderInterface;
+    public function build(): SenderInterface;
 }

@@ -53,7 +53,7 @@ class PayloadEncoderTest extends TestCase
     public function shouldSuccessEncodeWithLocalizedBody()
     {
         $alert = new Alert();
-        $alert = $alert->withLocalizedBody(new Localized('some', ['key' => 'value']));
+        $alert = $alert->withBodyLocalized(new Localized('some', ['key' => 'value']));
 
         $payload = new Payload(new Aps($alert));
         $encoded = $this->encoder->encode($payload);
@@ -95,7 +95,7 @@ class PayloadEncoderTest extends TestCase
     public function shouldSuccessEncodeWithActionLocalizedKey()
     {
         $alert = new Alert();
-        $alert = $alert->withLocalizedAction(new Localized('some'));
+        $alert = $alert->withActionLocalized(new Localized('some'));
 
         $payload = new Payload(new Aps($alert));
         $encoded = $this->encoder->encode($payload);
@@ -148,6 +148,20 @@ class PayloadEncoderTest extends TestCase
     /**
      * @test
      */
+    public function shouldSuccessEncodeWithBadgeAsZero()
+    {
+        $aps = new Aps(new Alert());
+        $aps = $aps->withBadge(0);
+
+        $payload = new Payload($aps);
+        $encoded = $this->encoder->encode($payload);
+
+        self::assertEquals('{"aps":{"alert":{"body":""},"badge":0}}', $encoded);
+    }
+
+    /**
+     * @test
+     */
     public function shouldSuccessEncodeWithSound()
     {
         $aps = new Aps(new Alert());
@@ -171,6 +185,20 @@ class PayloadEncoderTest extends TestCase
         $encoded = $this->encoder->encode($payload);
 
         self::assertEquals('{"aps":{"alert":{"body":""},"content-available":1}}', $encoded);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldSuccessEncodeWithMutableContent()
+    {
+        $aps = new Aps(new Alert());
+        $aps = $aps->withMutableContent(true);
+
+        $payload = new Payload($aps);
+        $encoded = $this->encoder->encode($payload);
+
+        self::assertEquals('{"aps":{"alert":{"body":""},"mutable-content":1}}', $encoded);
     }
 
     /**

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -55,7 +57,7 @@ class ExceptionFactory implements ExceptionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create(Response $response) : SendNotificationException
+    public function create(Response $response): SendNotificationException
     {
         $content = $response->getContent();
 
@@ -90,7 +92,7 @@ class ExceptionFactory implements ExceptionFactoryInterface
      *
      * @return SendNotificationException
      */
-    private function createByReason(string $reason, array $json)
+    private function createByReason(string $reason, array $json): SendNotificationException
     {
         $reason = strtolower($reason);
 

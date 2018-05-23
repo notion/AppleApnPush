@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -39,13 +41,25 @@ class Payload
     }
 
     /**
+     * Create new payload with body only.
+     *
+     * @param string $body
+     *
+     * @return Payload
+     */
+    public static function createWithBody(string $body): Payload
+    {
+        return new self(new Aps(new Alert($body)));
+    }
+
+    /**
      * Set aps
      *
      * @param Aps $aps
      *
      * @return Payload
      */
-    public function withAps(Aps $aps) : Payload
+    public function withAps(Aps $aps): Payload
     {
         $cloned = clone $this;
 
@@ -59,7 +73,7 @@ class Payload
      *
      * @return Aps
      */
-    public function getAps() : Aps
+    public function getAps(): Aps
     {
         return $this->aps;
     }
@@ -74,7 +88,7 @@ class Payload
      *
      * @throws \InvalidArgumentException
      */
-    public function withCustomData(string $name, $value)
+    public function withCustomData(string $name, $value): Payload
     {
         if ($value && !is_array($value) && !is_scalar($value) && !$value instanceof \JsonSerializable) {
             throw new \InvalidArgumentException(sprintf(
@@ -95,7 +109,7 @@ class Payload
      *
      * @return array
      */
-    public function getCustomData()
+    public function getCustomData(): array
     {
         return $this->customData;
     }

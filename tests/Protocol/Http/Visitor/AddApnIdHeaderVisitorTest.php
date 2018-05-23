@@ -41,7 +41,7 @@ class AddApnIdHeaderVisitorTest extends TestCase
     public function shouldAddHeaderForApnId()
     {
         $payload = new Payload(new Aps(new Alert()));
-        $notification = new Notification($payload, ApnId::fromId('550e8400-e29b-41d4-a716-446655440000'));
+        $notification = new Notification($payload, new ApnId('550e8400-e29b-41d4-a716-446655440000'));
         $request = new Request('https://domain.com', '{}');
 
         $visitedRequest = $this->visitor->visit($notification, $request);
@@ -49,7 +49,7 @@ class AddApnIdHeaderVisitorTest extends TestCase
         $headers = $visitedRequest->getHeaders();
 
         self::assertEquals([
-            'apns-id' => '550e8400-e29b-41d4-a716-446655440000'
+            'apns-id' => '550e8400-e29b-41d4-a716-446655440000',
         ], $headers);
     }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -23,7 +25,7 @@ class PayloadEncoder implements PayloadEncoderInterface
     /**
      * {@inheritdoc}
      */
-    public function encode(Payload $payload) : string
+    public function encode(Payload $payload): string
     {
         $data = [
             'aps' => $this->convertApsToArray($payload->getAps()),
@@ -41,7 +43,7 @@ class PayloadEncoder implements PayloadEncoderInterface
      *
      * @return array
      */
-    private function convertApsToArray(Aps $aps) : array
+    private function convertApsToArray(Aps $aps): array
     {
         $data = [
             'alert' => $this->convertAlertToArray($aps->getAlert()),
@@ -51,7 +53,7 @@ class PayloadEncoder implements PayloadEncoderInterface
             $data['sound'] = $aps->getSound();
         }
 
-        if ($aps->getBadge()) {
+        if ($aps->getBadge() !== null) {
             $data['badge'] = $aps->getBadge();
         }
 
@@ -61,6 +63,10 @@ class PayloadEncoder implements PayloadEncoderInterface
 
         if ($aps->isContentAvailable()) {
             $data['content-available'] = 1;
+        }
+
+        if ($aps->isMutableContent()) {
+            $data['mutable-content'] = 1;
         }
 
         if ($aps->getThreadId()) {
@@ -77,7 +83,7 @@ class PayloadEncoder implements PayloadEncoderInterface
      *
      * @return array
      */
-    private function convertAlertToArray(Alert $alert) : array
+    private function convertAlertToArray(Alert $alert): array
     {
         $data = [];
 
@@ -95,8 +101,8 @@ class PayloadEncoder implements PayloadEncoderInterface
             $data['title'] = $alert->getTitle();
         }
 
-        if ($alert->getLocalizedAction()->getKey()) {
-            $data['action-loc-key'] = $alert->getLocalizedAction()->getKey();
+        if ($alert->getActionLocalized()->getKey()) {
+            $data['action-loc-key'] = $alert->getActionLocalized()->getKey();
         }
 
         if ($alert->getLaunchImage()) {

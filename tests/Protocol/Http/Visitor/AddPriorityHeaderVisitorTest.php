@@ -12,7 +12,6 @@
 namespace Tests\Apple\ApnPush\Protocol\Http\Visitor;
 
 use Apple\ApnPush\Model\Alert;
-use Apple\ApnPush\Model\ApnId;
 use Apple\ApnPush\Model\Aps;
 use Apple\ApnPush\Model\Notification;
 use Apple\ApnPush\Model\Payload;
@@ -42,7 +41,7 @@ class AddPriorityHeaderVisitorTest extends TestCase
     public function shouldAddHeaderForPriority()
     {
         $payload = new Payload(new Aps(new Alert()));
-        $notification = new Notification($payload, ApnId::fromNull(), Priority::immediately());
+        $notification = new Notification($payload, null, Priority::immediately());
         $request = new Request('https://domain.com', '{}');
 
         $visitedRequest = $this->visitor->visit($notification, $request);
@@ -50,7 +49,7 @@ class AddPriorityHeaderVisitorTest extends TestCase
         $headers = $visitedRequest->getHeaders();
 
         self::assertEquals([
-            'apns-priority' => 10
+            'apns-priority' => 10,
         ], $headers);
     }
 

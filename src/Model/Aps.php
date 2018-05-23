@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -22,9 +24,9 @@ class Aps
     private $alert;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private $badge = 0;
+    private $badge = null;
 
     /**
      * @var string
@@ -35,6 +37,11 @@ class Aps
      * @var bool
      */
     private $contentAvailable = false;
+
+    /**
+     * @var bool
+    */
+    private $mutableContent = false;
 
     /**
      * @var string
@@ -63,7 +70,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withAlert(Alert $alert) : Aps
+    public function withAlert(Alert $alert): Aps
     {
         $cloned = clone $this;
 
@@ -77,7 +84,7 @@ class Aps
      *
      * @return Alert
      */
-    public function getAlert() : Alert
+    public function getAlert(): Alert
     {
         return $this->alert;
     }
@@ -89,7 +96,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withCategory(string $category) : Aps
+    public function withCategory(string $category): Aps
     {
         $cloned = clone $this;
 
@@ -103,7 +110,7 @@ class Aps
      *
      * @return string
      */
-    public function getCategory() : string
+    public function getCategory(): string
     {
         return $this->category;
     }
@@ -115,7 +122,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withSound(string $sound) : Aps
+    public function withSound(string $sound): Aps
     {
         $cloned = clone $this;
 
@@ -129,7 +136,7 @@ class Aps
      *
      * @return string
      */
-    public function getSound() : string
+    public function getSound(): string
     {
         return $this->sound;
     }
@@ -141,7 +148,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withBadge(int $badge) : Aps
+    public function withBadge(int $badge): Aps
     {
         $cloned = clone $this;
 
@@ -153,9 +160,9 @@ class Aps
     /**
      * Get badge
      *
-     * @return int
+     * @return int|null
      */
-    public function getBadge() : int
+    public function getBadge(): ?int
     {
         return $this->badge;
     }
@@ -167,7 +174,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withContentAvailable(bool $contentAvailable) : Aps
+    public function withContentAvailable(bool $contentAvailable): Aps
     {
         $cloned = clone $this;
 
@@ -181,9 +188,35 @@ class Aps
      *
      * @return bool
      */
-    public function isContentAvailable() : bool
+    public function isContentAvailable(): bool
     {
         return $this->contentAvailable;
+    }
+
+    /**
+     * Set mutable content option
+     *
+     * @param bool $mutableContent
+     *
+     * @return Aps
+     */
+    public function withMutableContent(bool $mutableContent): Aps
+    {
+        $cloned = clone $this;
+
+        $cloned->mutableContent = $mutableContent;
+
+        return $cloned;
+    }
+
+    /**
+     * Get mutable content option
+     *
+     * @return bool
+     */
+    public function isMutableContent(): bool
+    {
+        return $this->mutableContent;
     }
 
     /**
@@ -193,7 +226,7 @@ class Aps
      *
      * @return Aps
      */
-    public function withThreadId(string $threadId) : Aps
+    public function withThreadId(string $threadId): Aps
     {
         $cloned = clone $this;
 
@@ -207,7 +240,7 @@ class Aps
      *
      * @return string
      */
-    public function getThreadId() : string
+    public function getThreadId(): string
     {
         return $this->threadId;
     }

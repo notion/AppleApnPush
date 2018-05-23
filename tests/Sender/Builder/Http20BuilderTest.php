@@ -17,6 +17,7 @@ use Apple\ApnPush\Protocol\Http\ExceptionFactory\ExceptionFactoryInterface;
 use Apple\ApnPush\Protocol\Http\Sender\HttpSenderInterface;
 use Apple\ApnPush\Protocol\Http\UriFactory\UriFactoryInterface;
 use Apple\ApnPush\Protocol\Http\Visitor\AddApnIdHeaderVisitor;
+use Apple\ApnPush\Protocol\Http\Visitor\AddCollapseIdHeaderVisitor;
 use Apple\ApnPush\Protocol\Http\Visitor\AddExpirationHeaderVisitor;
 use Apple\ApnPush\Protocol\Http\Visitor\AddPriorityHeaderVisitor;
 use Apple\ApnPush\Protocol\Http\Visitor\HttpProtocolChainVisitor;
@@ -31,22 +32,57 @@ class Http20BuilderTest extends TestCase
     /**
      * @test
      */
-    public function shouldSuccessBuild()
+    public function shouldSuccessBuild(): void
     {
-        $authenticator = self::createMock(AuthenticatorInterface::class);
+        $authenticator = $this->createMock(AuthenticatorInterface::class);
         $builder = new Http20Builder($authenticator);
 
-        $exceptionFactory = self::createMock(ExceptionFactoryInterface::class);
-        $httpSender = self::createMock(HttpSenderInterface::class);
-        $messageEncoder = self::createMock(PayloadEncoderInterface::class);
-        $uriFactory = self::createMock(UriFactoryInterface::class);
-        $visitor = self::createMock(HttpProtocolVisitorInterface::class);
+        $expectedProtocol = $this->prepareBuilderAndCreateProtocol($builder, $authenticator);
+
+        $sender = $builder->build();
+
+        $expectedSender = new Sender($expectedProtocol);
+
+        self::assertInstanceOf(Sender::class, $sender);
+        self::assertEquals($expectedSender, $sender);
+    }
+
+    /**
+     * @test
+     */
+    public function shouldSuccessBuildProtocol(): void
+    {
+        $authenticator = $this->createMock(AuthenticatorInterface::class);
+        $builder = new Http20Builder($authenticator);
+
+        $expectedProtocol = $this->prepareBuilderAndCreateProtocol($builder, $authenticator);
+        $protocol = $builder->buildProtocol();
+
+        self::assertEquals($expectedProtocol, $protocol);
+    }
+
+    /**
+     * Prepare the builder and create the protocol
+     *
+     * @param Http20Builder          $builder
+     * @param AuthenticatorInterface $authenticator
+     *
+     * @return HttpProtocol
+     */
+    private function prepareBuilderAndCreateProtocol(Http20Builder $builder, AuthenticatorInterface $authenticator): HttpProtocol
+    {
+        $exceptionFactory = $this->createMock(ExceptionFactoryInterface::class);
+        $httpSender = $this->createMock(HttpSenderInterface::class);
+        $messageEncoder = $this->createMock(PayloadEncoderInterface::class);
+        $uriFactory = $this->createMock(UriFactoryInterface::class);
+        $visitor = $this->createMock(HttpProtocolVisitorInterface::class);
 
         $chainVisitor = new HttpProtocolChainVisitor();
         $chainVisitor->add(new AddExpirationHeaderVisitor(), 1);
         $chainVisitor->add(new AddPriorityHeaderVisitor(), 2);
         $chainVisitor->add(new AddApnIdHeaderVisitor(), 3);
-        $chainVisitor->add($visitor, 4);
+        $chainVisitor->add(new AddCollapseIdHeaderVisitor(), 4);
+        $chainVisitor->add($visitor, 5);
 
         $builder
             ->setAuthenticator($authenticator)
@@ -54,12 +90,9 @@ class Http20BuilderTest extends TestCase
             ->setHttpSender($httpSender)
             ->setPayloadEncoder($messageEncoder)
             ->setUriFactory($uriFactory)
-            ->addDefaultVisitors()
             ->addVisitor($visitor);
 
-        $sender = $builder->build();
-
-        $expectedProtocol = new HttpProtocol(
+        return new HttpProtocol(
             $authenticator,
             $httpSender,
             $messageEncoder,
@@ -67,10 +100,5 @@ class Http20BuilderTest extends TestCase
             $chainVisitor,
             $exceptionFactory
         );
-
-        $expectedSender = new Sender($expectedProtocol);
-
-        self::assertInstanceOf(Sender::class, $sender);
-        self::assertEquals($expectedSender, $sender);
     }
 }

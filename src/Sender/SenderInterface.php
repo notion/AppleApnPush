@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 /*
  * This file is part of the AppleApnPush package
  *
@@ -28,5 +30,5 @@ interface SenderInterface
      *
      * @throws \Apple\ApnPush\Exception\SendNotification\SendNotificationException
      */
-    public function send(Receiver $receiver, Notification $notification, bool $sandbox = false);
+    public function send(Receiver $receiver, Notification $notification, bool $sandbox = false): void;
 }
